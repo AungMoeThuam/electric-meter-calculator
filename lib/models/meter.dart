@@ -4,5 +4,7 @@ class Meter {
 
   final String name;
 
-  const Meter({required this.name,required this.cost});
+  final int totalMeter;
+
+  const Meter({required this.name,required this.cost, required this.totalMeter});
 }

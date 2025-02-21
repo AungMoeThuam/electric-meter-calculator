@@ -3,9 +3,9 @@ import 'package:electric_app/models/meter.dart';
 import 'package:electric_app/utils/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../utils/getDownloadPath.dart';
 
 class ResultPage extends StatelessWidget {
   const ResultPage({super.key, required this.data});
@@ -26,15 +26,6 @@ class ResultPage extends StatelessWidget {
     );
   }
 
-  Future<String> getDownloadsPath() async {
-    Directory? directory;
-    if (Platform.isAndroid) {
-      directory = Directory('/storage/emulated/0/Download'); // Direct Download folder on Android
-    } else {
-      directory = await getApplicationDocumentsDirectory();
-    }
-    return directory.path;
-  }
 
 
   String getFormattedTimestamp() {
@@ -52,15 +43,19 @@ class ResultPage extends StatelessWidget {
           return pw.Column(
             children: [
               pw.Text('Electricity Cost Report',
-                  style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                  style: pw.TextStyle(
+                      fontSize: 20, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 10),
+              pw.Text("Date : ${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}"),
               pw.SizedBox(height: 10),
               pw.Table.fromTextArray(
-                headers: ["No", "cost", "service charge 250+"],
+                headers: ["No", "Meter Units", "Cost", "Service Charge 250+"],
                 data: data.entries.map((entry) {
                   return [
                     entry.key,
-                    entry.value.cost.toString(),
-                    (entry.value.cost + 250).toString()
+                    "${entry.value.totalMeter.toString()} units",
+                    "${entry.value.cost} Ks",
+                    "${entry.value.cost + 250} Ks"
                   ];
                 }).toList(),
                 border: pw.TableBorder.all(),
@@ -95,15 +90,17 @@ class ResultPage extends StatelessWidget {
                 Table(
                   border: TableBorder.all(),
                   columnWidths: {
-                    0: FlexColumnWidth(1), // Adjust column widths
-                    1: FlexColumnWidth(1),
+                    0: FlexColumnWidth(1.2), // Adjust column widths
+                    1: FlexColumnWidth(1.5),
                     2: FlexColumnWidth(2),
+                    3: FlexColumnWidth(2),
                   },
                   children: [
                     TableRow(
                       decoration: BoxDecoration(color: Colors.amberAccent),
                       children: [
                         tableCell("No", isHeader: true),
+                        tableCell("Meter\n(units)", isHeader: true),
                         tableCell("Cost", isHeader: true),
                         tableCell("Service charge 250+", isHeader: true),
                       ],
@@ -111,11 +108,19 @@ class ResultPage extends StatelessWidget {
                     ...data.entries.map((entry) {
                       return TableRow(children: [
                         tableCell(entry.key),
-                        tableCell(entry.value.cost.toString()),
-                        tableCell((entry.value.cost + 250).toString()),
+                        tableCell(entry.value.totalMeter.toString()),
+                        tableCell("${entry.value.cost} Ks"),
+                        tableCell("${entry.value.cost + 250} Ks"),
                       ]);
                     }),
                   ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Text("Date : ${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}"),
                 ),
                 SizedBox(
                   height: 20,

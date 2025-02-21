@@ -32,14 +32,14 @@ class _HomePageState extends State<HomePage> {
       return toast("ယခင် မီတာက ယခု မီတာထက်ကြီးရမည်!");
     }
 
-    final meter0 = calculateCost(previousMeterText0.text, currentMeterText0.text);
-    final meter1 = calculateCost(previousMeterText1.text, currentMeterText1.text);
+    final [cost0,meter0] = calculateCost(previousMeterText0.text, currentMeterText0.text);
+    final  [cost1,meter1] = calculateCost(previousMeterText1.text, currentMeterText1.text);
 
 
 
     final data = {
-      "ko swe" : Meter(name: "Swe",cost: meter0),
-      "painting" : Meter(name: "Swe",cost: meter1)
+      "ko swe" : Meter(name: "Swe",cost: cost0, totalMeter: meter0),
+      "painting" : Meter(name: "Swe",cost: cost1, totalMeter: meter1),
     };
 
     Navigator.push(
